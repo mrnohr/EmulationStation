@@ -17,6 +17,7 @@ public:
 private:
 	void openMetaDataEd();
 	void changeFavoriteState();
+	void updateMetaData(FileData* file, MetaDataMap& metadata);
 	void jumpToLetter();
 
 	MenuComponent mMenu;

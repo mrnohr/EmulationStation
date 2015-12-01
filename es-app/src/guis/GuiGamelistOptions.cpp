@@ -58,8 +58,8 @@ GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : Gui
 
 	//add/remove from favorite entry
 	row.elements.clear();
-	FileData* file = getGamelist()->getCursor();
-	bool isFavorite = file->metadata.get("favorite") == "1";
+	const FileData& file = getGamelist()->getCursor();
+	bool isFavorite = file.get_metadata().get("favorite") == "1";
 	row.addElement(std::make_shared<TextComponent>(mWindow, isFavorite ? "REMOVE FROM FAVORITE" : "ADD TO FAVORITE", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
 	row.makeAcceptInputHandler(std::bind(&GuiGamelistOptions::changeFavoriteState, this));
 	mMenu.addRow(row);
@@ -83,22 +83,32 @@ GuiGamelistOptions::~GuiGamelistOptions()
 void GuiGamelistOptions::changeFavoriteState()
 {
 	// currently selected game
-	FileData* file = getGamelist()->getCursor();
+	const FileData& file = getGamelist()->getCursor();
+
+	MetaDataMap metadata = file.get_metadata();
+
 	// switch the value.
-	if (file != NULL)
+	if (metadata.get("favorite") == "0")
 	{
-		if (file->metadata.get("favorite") == "0")
-		{
-			file->metadata.set("favorite", "1");
-		}
-		else
-		{
-			file->metadata.set("favorite", "0");
-		}
+		metadata.set("favorite", "1");
 	}
+	else
+	{
+		metadata.set("favorite", "0");
+	}
+
+	updateMetaData((FileData*)(&file), metadata);
+
+	getGamelist()->onMetaDataChanged(file);
 
 	// closes the dialog
 	delete this;
+}
+
+// This hackery is to convert the const FileData to something I can edit
+void GuiGamelistOptions::updateMetaData(FileData* file, MetaDataMap& metadata)
+{
+	file->set_metadata(metadata);
 }
 
 void GuiGamelistOptions::openMetaDataEd()

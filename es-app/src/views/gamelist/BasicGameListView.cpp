@@ -46,9 +46,9 @@ void BasicGameListView::populateList(const std::vector<FileData>& files)
 	// This naive implemention of doing a first pass in the list is used instead.
 	for(auto it = files.begin(); it != files.end(); it++)
 	{
-		if ((*it)->metadata.get("favorite") == "1")
+		if ((*it).get_metadata().get("favorite") == "1")
 		{
-			mList.add("* " + (*it)->getName(), *it, ((*it)->getType() == FOLDER)); // FIXME Folder as favorite ?
+			mList.add("* " + it->getName(), *it, (it->getType() == FOLDER)); // FIXME Folder as favorite ?
 		}
 	}
 
