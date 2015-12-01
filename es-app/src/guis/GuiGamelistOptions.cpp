@@ -5,8 +5,8 @@
 #include "SystemManager.h"
 #include "Settings.h"
 
-GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : GuiComponent(window), 
-	mSystem(system), 
+GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : GuiComponent(window),
+	mSystem(system),
 	mMenu(window, "OPTIONS")
 {
 	addChild(&mMenu);
@@ -56,6 +56,14 @@ GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : Gui
 	row.makeAcceptInputHandler(std::bind(&GuiGamelistOptions::openMetaDataEd, this));
 	mMenu.addRow(row);
 
+	//add/remove from favorite entry
+	row.elements.clear();
+	FileData* file = getGamelist()->getCursor();
+	bool isFavorite = file->metadata.get("favorite") == "1";
+	row.addElement(std::make_shared<TextComponent>(mWindow, isFavorite ? "REMOVE FROM FAVORITE" : "ADD TO FAVORITE", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
+	row.makeAcceptInputHandler(std::bind(&GuiGamelistOptions::changeFavoriteState, this));
+	mMenu.addRow(row);
+
 	// center the menu
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 	mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, (mSize.y() - mMenu.getSize().y()) / 2);
@@ -71,13 +79,35 @@ GuiGamelistOptions::~GuiGamelistOptions()
 	}
 }
 
+// Switches the "favorite" state of the currently selected game.
+void GuiGamelistOptions::changeFavoriteState()
+{
+	// currently selected game
+	FileData* file = getGamelist()->getCursor();
+	// switch the value.
+	if (file != NULL)
+	{
+		if (file->metadata.get("favorite") == "0")
+		{
+			file->metadata.set("favorite", "1");
+		}
+		else
+		{
+			file->metadata.set("favorite", "0");
+		}
+	}
+
+	// closes the dialog
+	delete this;
+}
+
 void GuiGamelistOptions::openMetaDataEd()
 {
 	// open metadata editor
 	const FileData& file = getGamelist()->getCursor();
 	ScraperSearchParams p(file.getSystem(), file);
-	mWindow->pushGui(new GuiMetaDataEd(mWindow, file, 
-		std::bind(&IGameListView::onMetaDataChanged, getGamelist(), file), [this, file] { 
+	mWindow->pushGui(new GuiMetaDataEd(mWindow, file,
+		std::bind(&IGameListView::onMetaDataChanged, getGamelist(), file), [this, file] {
 			boost::filesystem::remove(file.getPath()); // actually delete the file on the filesystem
 			SystemManager::getInstance()->database().updateExists(file); // update the database
 			getGamelist()->onFilesChanged(); // tell the view
@@ -93,7 +123,7 @@ void GuiGamelistOptions::jumpToLetter()
 	// TODO
 	/*
 	const std::vector<FileData>& files = gamelist->getCursor()->getParent()->getChildren();
-	
+
 	long min = 0;
 	long max = files.size() - 1;
 	long mid = 0;

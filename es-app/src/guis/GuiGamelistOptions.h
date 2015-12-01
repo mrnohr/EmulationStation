@@ -16,8 +16,9 @@ public:
 
 private:
 	void openMetaDataEd();
+	void changeFavoriteState();
 	void jumpToLetter();
-	
+
 	MenuComponent mMenu;
 
 	typedef OptionListComponent<char> LetterList;
@@ -25,7 +26,7 @@ private:
 
 	typedef OptionListComponent<int> SortList;
 	std::shared_ptr<SortList> mListSort;
-	
+
 	SystemData* mSystem;
 	IGameListView* getGamelist();
 };
