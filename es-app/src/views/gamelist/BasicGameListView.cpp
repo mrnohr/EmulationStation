@@ -61,7 +61,7 @@ void BasicGameListView::populateList(const std::vector<FileData*>& files)
 		{
 			mList.add("* " + (*it)->getName(), *it, ((*it)->getType() == FOLDER)); // FIXME Folder as favorite ?
 		}
-		if ((*it)->metadata.get("hidden") == "1")
+		else if ((*it)->metadata.get("hidden") == "1")
 		{
 			if(showHidden) {
 				mList.add("- " + (*it)->getName(), *it, ((*it)->getType() == FOLDER));
