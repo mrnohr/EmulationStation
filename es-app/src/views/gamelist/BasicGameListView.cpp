@@ -41,7 +41,7 @@ void BasicGameListView::populateList(const std::vector<FileData*>& files)
 
 	mHeaderText.setText(files.at(0)->getSystem()->getFullName());
 
-	bool showHidden = Settings::getInstance()->getBool("ShowHidden")
+	bool showHidden = Settings::getInstance()->getBool("ShowHidden");
 
 	// The TextListComponent would be able to insert at a specific position,
 	// but the cost of this operation could be seriously huge.
