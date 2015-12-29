@@ -1,3 +1,5 @@
+_Branch Note_: This retropie-master branch is a mirror of the fork at https://github.com/RetroPie/EmulationStation
+
 EmulationStation
 ================
 
