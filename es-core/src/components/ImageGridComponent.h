@@ -21,8 +21,10 @@ protected:
 	using IList<ImageGridData, T>::getTransform;
 	using IList<ImageGridData, T>::mSize;
 	using IList<ImageGridData, T>::mCursor;
-	using IList<ImageGridData, T>::Entry;
-	using IList<ImageGridData, T>::mWindow;
+	#ifndef __APPLE__
+ 		using IList<ImageGridData, T>::Entry;
+ 	#endif
+ 	using IList<ImageGridData, T>::mWindow;
 
 public:
 	using IList<ImageGridData, T>::size;
@@ -32,7 +34,7 @@ public:
 	ImageGridComponent(Window* window);
 
 	void add(const std::string& name, const std::string& imagePath, const T& obj);
-	
+
 	void onSizeChanged() override;
 
 	bool input(InputConfig* config, Input input) override;
@@ -82,7 +84,7 @@ private:
 	};
 
 	Eigen::Vector2f getPadding() const { return Eigen::Vector2f(24, 24); }
-	
+
 	void buildImages();
 	void updateImages();
 
